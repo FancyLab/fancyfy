@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, Lint, Contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint TS
+        run: npm run lint
+
+      - name: Lint SCSS
+        run: npm run lint:style
+
+      - name: Validate Horizon DS contract (ADR-010)
+        run: npm run validate:contract
+
+      - name: Build
+        run: npm run build
+
+      - name: Check working tree clean
+        # Emitted sections/fcy-*.liquid and assets/fcy-* are committed; a
+        # PR must include a fresh build.
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Working tree dirty after build. Run 'npm run build' and commit the diff."
+            git status --short
+            git diff
+            exit 1
+          fi

@@ -1,0 +1,23 @@
+{% comment %}
+  fcy-__ID__ — fancyfy section.
+
+  The build plugin (fancyfy/cli/vite-plugin.ts) replaces:
+    - {% fcy_asset js %}   → hashed script tag
+    - {% fcy_asset css %}  → hashed stylesheet tag
+    - {% fcy_schema %}     → the compiled {% schema %} block
+{% endcomment %}
+{% fcy_asset css %}
+{% fcy_asset js %}
+
+<fcy-__ID__
+  class="fcy-__ID__ color-{{ section.settings.color_scheme }}"
+  data-section-type="fcy-__ID__"
+  data-section-id="{{ section.id }}"
+>
+  {% comment %} Replace with your section markup. Example: {% endcomment %}
+  <div class="fcy-__ID____container">
+    <h2 class="fcy-__ID____heading">{{ section.settings.heading | default: 'fcy-__ID__' }}</h2>
+  </div>
+</fcy-__ID__>
+
+{% fcy_schema %}

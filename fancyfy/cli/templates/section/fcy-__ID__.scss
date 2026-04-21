@@ -1,0 +1,33 @@
+// fcy-__ID__ styles.
+// Per ADR-003 (revised) + ADR-010: consume Horizon tokens directly.
+// Declare --fcy-* tokens only when Horizon has no equivalent.
+
+@use '../../ds/abstracts' as fcy;
+
+.fcy-__ID__ {
+  display: block;
+  color: var(--color-foreground);
+  background: var(--color-background);
+  padding: var(--padding-xl);
+  border-radius: var(--style-border-radius-md);
+  transition: opacity var(--animation-values);
+
+  &__container {
+    max-width: var(--normal-page-width);
+    margin-inline: auto;
+  }
+
+  &__heading {
+    font-family: var(--font-h2--family);
+    font-size: var(--font-h2--size);
+    font-weight: var(--font-h2--weight);
+    line-height: var(--font-h2--line-height);
+    letter-spacing: var(--font-h2--letter-spacing);
+    color: var(--color-foreground-heading);
+    margin-block-end: var(--margin-lg);
+  }
+
+  @include fcy.respond-to(md) {
+    padding: var(--padding-2xl);
+  }
+}

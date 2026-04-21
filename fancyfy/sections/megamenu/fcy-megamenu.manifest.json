@@ -1,0 +1,53 @@
+{
+  "id": "megamenu",
+  "version": "0.1.0",
+  "displayName": "Megamenu",
+  "category": "navigation",
+  "description": "Multi-column flyout navigation with nested blocks (panel → column/promo/collection). Desktop grid, mobile accordion.",
+  "files": {
+    "sections": ["fcy-megamenu.liquid"],
+    "blocks": [
+      "fcy-mm-panel.liquid",
+      "fcy-mm-column.liquid",
+      "fcy-mm-promo.liquid",
+      "fcy-mm-collection.liquid"
+    ],
+    "snippets": [],
+    "assets": ["fcy-megamenu.js", "fcy-megamenu.css"]
+  },
+  "tokens_required": [
+    "--color-foreground",
+    "--color-foreground-muted",
+    "--color-background",
+    "--color-border",
+    "--color-primary",
+    "--color-primary-hover",
+    "--padding-xl",
+    "--padding-2xl",
+    "--margin-lg",
+    "--gap-xl",
+    "--gap-2xl",
+    "--style-border-radius-sm",
+    "--style-border-width",
+    "--menu-font-md--size",
+    "--menu-font-md--line-height",
+    "--menu-font-sm--size",
+    "--menu-font-sm--line-height",
+    "--submenu-animation-speed",
+    "--submenu-animation-easing",
+    "--hover-transition-duration",
+    "--hover-transition-timing",
+    "--layer-header-menu",
+    "--focus-outline-width",
+    "--focus-outline-offset",
+    "--narrow-page-width",
+    "--normal-page-width",
+    "--wide-page-width"
+  ],
+  "snippets_required": [],
+  "settings_schema_required": [],
+  "horizon_min_version": "3.4.0",
+  "fancyfy_min_version": "0.1.0",
+  "supersedes": [],
+  "keywords": ["navigation", "header", "menu", "megamenu", "dropdown"]
+}

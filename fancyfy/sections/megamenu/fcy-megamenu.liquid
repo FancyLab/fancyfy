@@ -1,0 +1,109 @@
+{% comment %}
+  fcy-megamenu — F1 v0.1.0
+
+  Renders:
+    - A menubar driven by section.settings.menu (linklist).
+    - For each top-level link, looks for a fcy-mm-panel block whose
+      menu_item_handle matches the link's handle. If found, the panel
+      is rendered INSIDE the top-level <li> (so mobile accordion +
+      desktop absolute-positioned flyout share one DOM structure).
+    - Top-levels without a matching panel render as plain links (no dropdown).
+
+  The Web Component handles open/close, keyboard, and outside-click.
+{% endcomment %}
+{% fcy_asset css %}
+{% fcy_asset js %}
+
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+  assign font_size_var = '--menu-font-' | append: section.settings.top_level_font_size | append: '--size'
+  assign font_line_var = '--menu-font-' | append: section.settings.top_level_font_size | append: '--line-height'
+  assign letter_spacing_em = section.settings.top_level_letter_spacing | divided_by: 100.0
+-%}
+
+<fcy-megamenu
+  class="fcy-megamenu color-{{ section.settings.color_scheme }} fcy-megamenu--{{ section.settings.panel_width }}"
+  data-section-type="fcy-megamenu"
+  data-section-id="{{ section.id }}"
+  data-open-on="{{ section.settings.open_on }}"
+  data-hover-delay="{{ section.settings.hover_delay_ms }}"
+  data-active-indicator="{{ section.settings.active_indicator }}"
+  style="
+    --fcy-mm-top-font-size: var({{ font_size_var }});
+    --fcy-mm-top-line-height: var({{ font_line_var }});
+    --fcy-mm-top-letter-spacing: {{ letter_spacing_em }}em;
+    --fcy-mm-top-text-transform: {{ section.settings.top_level_case }};
+  "
+>
+  <nav class="fcy-megamenu__nav" aria-label="{{ menu.title | default: 'Main menu' }}">
+    {%- if menu == blank or menu.links.size == 0 -%}
+      {%- if request.design_mode -%}
+        <p class="fcy-megamenu__empty">
+          Pick a menu in the section settings (Online Store → Navigation manages the links).
+        </p>
+      {%- endif -%}
+    {%- else -%}
+      <ul class="fcy-megamenu__menubar" role="menubar">
+        {%- for top_link in menu.links -%}
+          {%- assign matching_panel = nil -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'fcy-mm-panel' and block.settings.menu_item_handle == top_link.handle -%}
+              {%- assign matching_panel = block -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- assign has_panel = false -%}
+          {%- if matching_panel != nil -%}{%- assign has_panel = true -%}{%- endif -%}
+          {%- assign is_active = false -%}
+          {%- if top_link.active or top_link.child_active -%}{%- assign is_active = true -%}{%- endif -%}
+
+          <li
+            role="none"
+            class="fcy-megamenu__item{% if is_active %} is-active{% endif %}{% if has_panel %} has-panel{% endif %}"
+            data-handle="{{ top_link.handle }}"
+          >
+            {%- if has_panel -%}
+              <button
+                type="button"
+                role="menuitem"
+                class="fcy-megamenu__trigger"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="fcy-mm-panel-{{ section.id }}-{{ top_link.handle }}"
+                data-handle="{{ top_link.handle }}"
+              >
+                <span class="fcy-megamenu__trigger-label">{{ top_link.title }}</span>
+              </button>
+              {%- comment -%}
+                Render ONLY this panel block, inside this <li>. Shopify 2.0
+                supports rendering a specific nested block by id.
+              {%- endcomment -%}
+              <div
+                id="fcy-mm-panel-{{ section.id }}-{{ top_link.handle }}"
+                class="fcy-megamenu__panel"
+                role="menu"
+                aria-label="{{ top_link.title }} submenu"
+                data-panel-width="{{ matching_panel.settings.panel_width }}"
+                hidden
+              >
+                {% content_for 'block', id: matching_panel.id %}
+              </div>
+            {%- else -%}
+              <a
+                role="menuitem"
+                class="fcy-megamenu__trigger fcy-megamenu__trigger--link"
+                href="{{ top_link.url }}"
+                {% if is_active %}aria-current="page"{% endif %}
+              >
+                <span class="fcy-megamenu__trigger-label">{{ top_link.title }}</span>
+              </a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </nav>
+</fcy-megamenu>
+
+{% fcy_schema %}

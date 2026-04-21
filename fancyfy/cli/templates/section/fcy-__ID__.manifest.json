@@ -1,0 +1,20 @@
+{
+  "id": "__ID__",
+  "version": "0.1.0",
+  "displayName": "__PASCAL__",
+  "category": "content",
+  "description": "TODO: describe the section.",
+  "files": {
+    "sections": ["fcy-__ID__.liquid"],
+    "blocks": [],
+    "snippets": [],
+    "assets": ["fcy-__ID__.js", "fcy-__ID__.css"]
+  },
+  "tokens_required": ["--color-foreground", "--color-background", "--padding-xl", "--style-border-radius-md"],
+  "snippets_required": [],
+  "settings_schema_required": [],
+  "horizon_min_version": "3.4.0",
+  "fancyfy_min_version": "0.1.0",
+  "supersedes": [],
+  "keywords": []
+}

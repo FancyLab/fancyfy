@@ -1,0 +1,59 @@
+{% comment %}
+  fancyfy editor-only section badge — ADR-005 §2.
+
+  Rendered exclusively in Shopify theme-editor mode (request.design_mode).
+  Injects a small visual label on every rendered section indicating its
+  origin (HORIZON or FANCYFY), detected by the section's type prefix.
+  Zero cost in the live storefront — the {% if %} gate evaluates to false.
+{% endcomment %}
+{%- if request.design_mode -%}
+  <style id="fcy-editor-badge-styles">
+    .fcy-editor-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 2147483647;
+      padding: 2px 6px;
+      font: 600 10px/1 system-ui, -apple-system, sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      pointer-events: none;
+      user-select: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    }
+    .fcy-editor-badge--horizon { background: #111; color: #fff; }
+    .fcy-editor-badge--fancyfy { background: #FFD54A; color: #111; }
+    .shopify-section { position: relative; }
+  </style>
+  <script id="fcy-editor-badge-script">
+    (() => {
+      const MARK = 'data-fcy-badge';
+      const render = () => {
+        document.querySelectorAll('.shopify-section').forEach((el) => {
+          if (el.hasAttribute(MARK)) return;
+          const id = el.id || '';
+          // Shopify wraps sections in <div class="shopify-section" id="shopify-section-<id>">
+          // Heuristic: read the section's schema `type` from the inner [data-section-type] or fallback to id.
+          const typeEl = el.querySelector('[data-section-type]');
+          const type = typeEl?.getAttribute('data-section-type') || id;
+          const isFancyfy = type.indexOf('fcy-') === 0;
+          const badge = document.createElement('div');
+          badge.className = 'fcy-editor-badge ' + (isFancyfy ? 'fcy-editor-badge--fancyfy' : 'fcy-editor-badge--horizon');
+          badge.textContent = isFancyfy ? 'FANCYFY' : 'HORIZON';
+          el.appendChild(badge);
+          el.setAttribute(MARK, '1');
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', render);
+      } else {
+        render();
+      }
+      // Re-run when sections change (editor repaints)
+      document.addEventListener('shopify:section:load', render);
+      document.addEventListener('shopify:section:unload', render);
+      document.addEventListener('shopify:section:reorder', render);
+    })();
+  </script>
+{%- endif -%}

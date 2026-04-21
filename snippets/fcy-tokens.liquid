@@ -1,0 +1,19 @@
+{% comment %}
+  fancyfy runtime token bridge — ADR-003 §3.
+
+  Declares any fancyfy-exclusive custom properties (category C of ADR-003 §2).
+  This file is intentionally thin: fancyfy does NOT redeclare tokens that
+  Horizon already provides. Horizon's theme-styles-variables emits all global
+  design tokens on :root, and color-scheme tokens inside .color-scheme-N.
+
+  Sections add their own --fcy-* declarations here only when justified
+  per ADR-003 §2 Category C. Add a setting to `config/settings_schema.json`
+  under the "Fancyfy — Extensions" group when the token is merchant-editable.
+{% endcomment %}
+<style id="fcy-tokens">
+  :root {
+    /* === fancyfy-exclusive tokens ===
+       Empty in F0 — sections add entries as needed (see fcy-tokens.config.ts
+       for the rationale shape). */
+  }
+</style>

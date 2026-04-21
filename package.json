@@ -1,0 +1,40 @@
+{
+  "name": "fancyfy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "fancylab's fork of Shopify Horizon — internal section library and design-system extensions.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "dev:shopify": "shopify theme dev",
+    "dev:logs": "tsx fancyfy/cli/log-collector.ts",
+    "build": "vite build --mode production",
+    "build:schema": "vite build --mode production -- --commit-schema",
+    "new:section": "tsx fancyfy/cli/new-section.ts",
+    "validate:contract": "tsx fancyfy/cli/validate-contract.ts",
+    "lint": "eslint 'fancyfy/**/*.{ts,tsx}'",
+    "lint:style": "stylelint 'fancyfy/**/*.scss'",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "check": "npm run typecheck && npm run lint && npm run lint:style && npm run validate:contract",
+    "format": "prettier --write 'fancyfy/**/*.{ts,tsx,scss,json,md}'",
+    "format:check": "prettier --check 'fancyfy/**/*.{ts,tsx,scss,json,md}'"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.10.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.3",
+    "sass-embedded": "^1.79.0",
+    "stylelint": "^16.9.0",
+    "stylelint-config-standard-scss": "^13.1.0",
+    "stylelint-prettier": "^5.0.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.6"
+  }
+}

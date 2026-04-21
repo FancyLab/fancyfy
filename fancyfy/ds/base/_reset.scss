@@ -1,0 +1,16 @@
+// Minimal reset for fancyfy web components.
+// Horizon already ships global resets in assets/base.css — do NOT duplicate.
+// This file covers only our custom-element hosts and their shadow roots.
+
+:where(fcy-megamenu, fcy-sticky-atc, fcy-store-locator, fcy-shoppable-image, fcy-size-guide, fcy-cart-upsell, fcy-cart-crosssell, fcy-cart-downsell, fcy-cart-rewards-bar) {
+  display: block;
+  box-sizing: border-box;
+}
+
+// Ensure all fcy-* hosts have predictable box-sizing on descendants without
+// fighting Horizon's existing rules.
+:where([class^='fcy-'], [class*=' fcy-']) *,
+:where([class^='fcy-'], [class*=' fcy-']) *::before,
+:where([class^='fcy-'], [class*=' fcy-']) *::after {
+  box-sizing: border-box;
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "fancyfy/ds/**/*.ts",
+    "fancyfy/shared/**/*.ts",
+    "fancyfy/sections/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "fancyfy/cli/**",
+    "fancyfy/**/__tests__/**",
+    "fancyfy/**/*.test.ts",
+    "fancyfy/ds/generated"
+  ]
+}

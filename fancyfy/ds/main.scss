@@ -1,0 +1,8 @@
+// fancyfy Design System — single entry.
+// Per ADR-003 (revised), this DS is an EXTENDER of Horizon's DS, not a replacement.
+// Tokens are consumed directly from Horizon (see fancyfy/ds/tokens.ts for the contract).
+// This file imports only the pieces fancyfy owns: mixins, utilities, and the reset.
+
+@use 'abstracts';
+@use 'base/reset';
+@use 'utilities';

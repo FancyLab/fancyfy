@@ -1,0 +1,26 @@
+// Named breakpoints. Values match Horizon's primary breakpoints
+// (see occurrences of `min-width: 40em`, `min-width: 48em`, `min-width: 750px`
+// in assets/base.css). Kept small and stable.
+
+$breakpoints: (
+  sm: 40em,   // ~640px — Horizon uses this for several responsive switches
+  md: 48em,   // ~768px — content layout shifts
+  lg: 64em,   // ~1024px — desktop nav / multi-column panels
+  xl: 80em,   // ~1280px — wide-page-width territory
+);
+
+@mixin respond-to($name) {
+  $min: map-get($breakpoints, $name);
+  @if $min == null {
+    @error "Unknown breakpoint: #{$name}. Valid: #{map-keys($breakpoints)}";
+  }
+  @media (min-width: $min) { @content; }
+}
+
+@mixin respond-below($name) {
+  $max: map-get($breakpoints, $name);
+  @if $max == null {
+    @error "Unknown breakpoint: #{$name}. Valid: #{map-keys($breakpoints)}";
+  }
+  @media (max-width: calc(#{$max} - 1px)) { @content; }
+}

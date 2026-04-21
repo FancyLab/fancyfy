@@ -1,0 +1,5 @@
+// Public API for the abstracts layer. Consumers `@use 'fancyfy/ds/abstracts' as fcy`
+// and then call `fcy.respond-to(md)`, `fcy.focus-ring`, etc.
+
+@forward 'breakpoints';
+@forward 'mixins';

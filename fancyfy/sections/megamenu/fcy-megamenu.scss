@@ -1,0 +1,461 @@
+// fcy-megamenu — F1 v0.1.0
+// Desktop: hover/focus-driven flyout with 2–6 column grid.
+// Mobile (< md): accordion, one open at a time, images hidden.
+// All tokens consumed from Horizon's contract (ADR-010). No raw colors/sizes.
+
+@use '../../ds/abstracts' as fcy;
+
+// Local constants (layout metrics not tokenable)
+$transition-props: background-color, color, border-color, opacity, transform;
+
+fcy-megamenu {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+
+.fcy-megamenu {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: var(--font-body--family);
+  // The section in the header-group is its own scheme wrapper.
+
+  &__nav {
+    width: 100%;
+  }
+
+  &__empty {
+    padding: var(--padding-md) var(--padding-xl);
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size--sm);
+  }
+
+  // ───────────────────────────────
+  // Menubar (top-level items)
+  // ───────────────────────────────
+  &__menubar {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-xl);
+
+    @include fcy.respond-below(md) {
+      flex-direction: column;
+      gap: 0;
+      align-items: stretch;
+    }
+  }
+
+  &__item {
+    position: static;
+
+    @include fcy.respond-below(md) {
+      border-bottom: var(--style-border-width) solid var(--color-border);
+    }
+  }
+
+  &__trigger {
+    --_trigger-pad-block: var(--padding-md);
+    --_trigger-pad-inline: 0;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-2xs);
+    padding: var(--_trigger-pad-block) var(--_trigger-pad-inline);
+    font: inherit;
+    font-size: var(--fcy-mm-top-font-size, var(--menu-font-md--size));
+    line-height: var(--fcy-mm-top-line-height, var(--menu-font-md--line-height));
+    letter-spacing: var(--fcy-mm-top-letter-spacing, 0);
+    text-transform: var(--fcy-mm-top-text-transform, none);
+    text-decoration: none;
+    color: var(--color-foreground);
+    transition: color var(--hover-transition-duration) var(--hover-transition-timing);
+    position: relative;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-primary);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid var(--color-primary);
+      outline-offset: var(--focus-outline-offset);
+    }
+
+    &--link {
+      text-decoration: none;
+    }
+
+    @include fcy.respond-below(md) {
+      width: 100%;
+      justify-content: space-between;
+      --_trigger-pad-block: var(--padding-lg);
+      --_trigger-pad-inline: var(--padding-lg);
+    }
+  }
+
+  // Active indicator (parent or current page)
+  &[data-active-indicator='underline'] &__item.is-active &__trigger,
+  &[data-active-indicator='both'] &__item.is-active &__trigger {
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(var(--_trigger-pad-block) * -0.5);
+      height: 2px;
+      background: var(--color-primary);
+    }
+  }
+
+  &[data-active-indicator='color'] &__item.is-active &__trigger,
+  &[data-active-indicator='both'] &__item.is-active &__trigger {
+    color: var(--color-primary);
+  }
+
+  // Open state — the button has aria-expanded="true"
+  &__trigger[aria-expanded='true'] {
+    color: var(--color-primary);
+  }
+
+  // ───────────────────────────────
+  // Panel (desktop: absolute flyout; mobile: inline accordion)
+  // ───────────────────────────────
+  &__panel {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    border: var(--style-border-width) solid var(--color-border);
+    box-shadow: 0 2px 10px rgb(var(--color-shadow-rgb) / var(--opacity-10));
+    padding: var(--padding-xl) var(--padding-2xl);
+
+    // Animation (Horizon submenu tokens)
+    transition:
+      opacity var(--submenu-animation-speed) var(--submenu-animation-easing),
+      transform var(--submenu-animation-speed) var(--submenu-animation-easing);
+
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    @include fcy.respond-to(md) {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: var(--layer-header-menu);
+      border-top-width: 0;
+      border-left-width: 0;
+      border-right-width: 0;
+
+      // Contained vs full width — expressed at section level via
+      // `.fcy-megamenu--{width}`; panels can override via `data-panel-width`.
+    }
+
+    @include fcy.respond-below(md) {
+      position: static;
+      border-width: 0;
+      box-shadow: none;
+      padding: var(--padding-md) var(--padding-lg) var(--padding-lg);
+      background: color-mix(in srgb, var(--color-foreground) 4%, var(--color-background));
+    }
+  }
+
+  // Panel width modifiers
+  &--contained &__panel {
+    @include fcy.respond-to(md) {
+      max-width: var(--normal-page-width);
+      margin-inline: auto;
+      border-radius: var(--style-border-radius-sm);
+      border-left-width: var(--style-border-width);
+      border-right-width: var(--style-border-width);
+    }
+  }
+
+  &--full &__panel {
+    @include fcy.respond-to(md) {
+      max-width: none;
+    }
+  }
+
+  // A panel can override the section default
+  &__panel[data-panel-width='contained'] {
+    @include fcy.respond-to(md) {
+      max-width: var(--normal-page-width);
+      margin-inline: auto;
+    }
+  }
+  &__panel[data-panel-width='full'] {
+    @include fcy.respond-to(md) {
+      max-width: none;
+    }
+  }
+}
+
+// ───────────────────────────────
+// Panel internals — blocks
+// ───────────────────────────────
+.fcy-mm__panel-inner {
+  width: 100%;
+}
+
+.fcy-mm__panel-grid {
+  display: grid;
+  gap: var(--gap-2xl);
+
+  @include fcy.respond-to(md) {
+    grid-template-columns: repeat(var(--fcy-mm-cols, 4), minmax(0, 1fr));
+  }
+
+  @include fcy.respond-below(md) {
+    grid-template-columns: 1fr;
+    gap: var(--gap-lg);
+  }
+}
+
+// ───────────────────────────────
+// Column block
+// ───────────────────────────────
+.fcy-mm__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+
+  &-heading {
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: var(--menu-font-md--size);
+    line-height: var(--menu-font-md--line-height);
+    color: var(--color-foreground-heading);
+    margin: 0 0 var(--margin-xs);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-2xs);
+    text-decoration: none;
+
+    &--link {
+      color: var(--color-foreground-heading);
+      transition: color var(--hover-transition-duration) var(--hover-transition-timing);
+
+      &:hover,
+      &:focus-visible {
+        color: var(--color-primary);
+      }
+    }
+
+    &-chevron {
+      flex-shrink: 0;
+      transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+    }
+
+    &--link:hover &-chevron {
+      transform: translateX(2px);
+    }
+  }
+
+  &-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+  }
+
+  &-link {
+    display: inline-block;
+    color: var(--color-foreground-muted);
+    font-size: var(--menu-font-sm--size);
+    line-height: var(--menu-font-sm--line-height);
+    text-decoration: none;
+    transition: color var(--hover-transition-duration) var(--hover-transition-timing);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-primary);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid var(--color-primary);
+      outline-offset: var(--focus-outline-offset);
+    }
+
+    &.is-active {
+      color: var(--color-foreground);
+      font-weight: var(--font-subheading--weight);
+    }
+  }
+}
+
+// ───────────────────────────────
+// Promo block (desktop-only visible)
+// ───────────────────────────────
+.fcy-mm__promo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+  color: var(--color-foreground);
+  text-decoration: none;
+  border-radius: var(--style-border-radius-sm);
+  overflow: hidden;
+  transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+
+  @include fcy.respond-to(md) {
+    &:hover {
+      transform: translateY(calc(var(--hover-lift-amount, 2px) * -1));
+    }
+  }
+
+  @include fcy.respond-below(md) {
+    display: none; // desktop-only per F1 decision
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline-width) solid var(--color-primary);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  &--span-2 { grid-column: span 2; }
+  &--span-3 { grid-column: span 3; }
+
+  &-image {
+    background: color-mix(in srgb, var(--color-foreground) 6%, var(--color-background));
+    overflow: hidden;
+
+    &--placeholder { aspect-ratio: 16 / 9; }
+  }
+
+  &--ratio-square &-image { aspect-ratio: 1 / 1; }
+  &--ratio-portrait &-image { aspect-ratio: 4 / 5; }
+  &--ratio-landscape &-image { aspect-ratio: 16 / 9; }
+  &--ratio-wide &-image { aspect-ratio: 2 / 1; }
+
+  &-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-3xs);
+    padding: var(--padding-xs) var(--padding-2xs);
+  }
+
+  &-heading {
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: var(--menu-font-md--size);
+    line-height: var(--menu-font-md--line-height);
+    color: var(--color-foreground-heading);
+  }
+
+  &-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-2xs);
+    color: var(--color-primary);
+    font-size: var(--menu-font-sm--size);
+    line-height: var(--menu-font-sm--line-height);
+  }
+}
+
+// ───────────────────────────────
+// Collection block (desktop-only visible)
+// ───────────────────────────────
+.fcy-mm__collection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+
+  @include fcy.respond-below(md) {
+    display: none;
+  }
+
+  &-heading {
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: var(--menu-font-md--size);
+    line-height: var(--menu-font-md--line-height);
+    color: var(--color-foreground-heading);
+    margin: 0 0 var(--margin-xs);
+  }
+
+  &-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-sm);
+  }
+
+  &-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xs);
+    color: var(--color-foreground);
+    text-decoration: none;
+    transition: color var(--hover-transition-duration) var(--hover-transition-timing);
+
+    &:hover,
+    &:focus-visible { color: var(--color-primary); }
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid var(--color-primary);
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  &-img {
+    width: 100%;
+    object-fit: cover;
+    border-radius: var(--style-border-radius-sm);
+    background: color-mix(in srgb, var(--color-foreground) 4%, var(--color-background));
+
+    &--placeholder { aspect-ratio: 1 / 1; }
+  }
+
+  &--ratio-square &-img { aspect-ratio: 1 / 1; }
+  &--ratio-portrait &-img { aspect-ratio: 4 / 5; }
+  &--ratio-landscape &-img { aspect-ratio: 16 / 9; }
+
+  &-title {
+    font-size: var(--menu-font-sm--size);
+    line-height: var(--menu-font-sm--line-height);
+  }
+
+  &-empty {
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size--sm);
+    font-style: italic;
+  }
+}
+
+// ───────────────────────────────
+// Reduced motion
+// ───────────────────────────────
+@include fcy.reduce-motion {
+  .fcy-megamenu__panel,
+  .fcy-mm__column-heading-chevron,
+  .fcy-mm__promo,
+  .fcy-mm__collection-link {
+    transition: none !important;
+  }
+}

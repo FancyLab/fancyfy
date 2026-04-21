@@ -1,0 +1,73 @@
+{% comment %}
+  fcy-mm-collection — a mini product-preview for a collection.
+  Desktop-only visible (CSS hides on mobile per F1 decision).
+{% endcomment %}
+{%- liquid
+  assign heading = block.settings.heading
+  assign col = collections[block.settings.collection]
+  assign count = block.settings.product_count
+  assign ratio = block.settings.product_aspect_ratio
+-%}
+<div class="fcy-mm__collection fcy-mm__collection--ratio-{{ ratio }}" {{ block.shopify_attributes }}>
+  {%- if heading != blank -%}
+    <h3 class="fcy-mm__collection-heading">{{ heading }}</h3>
+  {%- endif -%}
+  {%- if col != blank and col.products.size > 0 -%}
+    <ul class="fcy-mm__collection-grid">
+      {%- for product in col.products limit: count -%}
+        <li class="fcy-mm__collection-item">
+          <a href="{{ product.url }}" class="fcy-mm__collection-link">
+            {%- if product.featured_image -%}
+              {{
+                product.featured_image
+                | image_url: width: 400
+                | image_tag:
+                  loading: 'lazy',
+                  width: product.featured_image.width,
+                  height: product.featured_image.height,
+                  sizes: '(min-width: 64em) 200px, 40vw',
+                  widths: '120, 200, 300, 400',
+                  class: 'fcy-mm__collection-img'
+              }}
+            {%- else -%}
+              <div class="fcy-mm__collection-img fcy-mm__collection-img--placeholder" aria-hidden="true"></div>
+            {%- endif -%}
+            <span class="fcy-mm__collection-title">{{ product.title }}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- elsif request.design_mode -%}
+    <p class="fcy-mm__collection-empty">Pick a collection in this block's settings.</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Collection preview",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Featured" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    {
+      "type": "range",
+      "id": "product_count",
+      "label": "Products to show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "product_aspect_ratio",
+      "label": "Product image aspect ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "landscape", "label": "Landscape (16:9)" }
+      ],
+      "default": "portrait"
+    }
+  ]
+}
+{% endschema %}

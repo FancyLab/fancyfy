@@ -31,8 +31,12 @@
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
 
+    {%- comment -%} fancyfy — see ADR-001 §2 addendum & ADR-003 §3 {%- endcomment -%}
+    {%- render 'fcy-tokens' -%}
+
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
+      {%- render 'fcy-editor-badge' -%}
     {% endif %}
 
     {{ content_for_header }}

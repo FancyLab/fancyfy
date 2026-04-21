@@ -1,0 +1,54 @@
+// fancyfy-shared SCSS mixins. All values flow through Horizon tokens
+// (ADR-010 contract). Do NOT declare color literals here.
+
+@use 'breakpoints' as bp;
+
+/// Focus ring that respects Horizon's focus tokens.
+@mixin focus-ring($color: null) {
+  outline: var(--focus-outline-width) solid var(--color-primary);
+  outline-offset: var(--focus-outline-offset);
+  @if $color != null {
+    outline-color: $color;
+  }
+}
+
+/// Visually hide an element while keeping it available to screen readers.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/// Apply content-visibility: auto below a breakpoint (ADR-006 §2).
+/// Caller must provide contain-intrinsic-size.
+@mixin below-the-fold($min-intrinsic-height: 600px) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto $min-intrinsic-height;
+}
+
+/// Surface elevation using Horizon's shadow token.
+@mixin elevation-raised {
+  box-shadow: var(--shadow-button);
+}
+
+/// Reduce motion for users who prefer it.
+@mixin reduce-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+/// Respond to breakpoint — re-exported for convenience.
+@mixin respond-to($name) {
+  @include bp.respond-to($name) { @content; }
+}
+
+@mixin respond-below($name) {
+  @include bp.respond-below($name) { @content; }
+}

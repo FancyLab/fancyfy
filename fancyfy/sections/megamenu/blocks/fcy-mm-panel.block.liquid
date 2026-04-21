@@ -1,0 +1,63 @@
+{% comment %}
+  fcy-mm-panel — a single top-level flyout panel.
+
+  Rendered by the section via {% content_for 'block', id: block.id %}
+  inside each <li> whose top-level link matches block.settings.menu_item_handle.
+
+  Contains nested blocks (column / promo / collection) rendered via
+  {% content_for 'blocks' %}.
+{% endcomment %}
+<div
+  class="fcy-mm__panel-inner"
+  data-layout="{{ block.settings.layout }}"
+  style="--fcy-mm-cols: {{ block.settings.layout }};"
+  {{ block.shopify_attributes }}
+>
+  <div class="fcy-mm__panel-grid">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Panel (top-level item)",
+  "settings": [
+    {
+      "type": "text",
+      "id": "menu_item_handle",
+      "label": "Top-level menu item handle",
+      "info": "Must match the handle of a top-level link in the section's menu. E.g., the link 'Skin Care' at /collections/skin-care gets handle 'skin-care'."
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "info": "How many grid columns the panel uses on desktop.",
+      "options": [
+        { "value": "2", "label": "2 columns" },
+        { "value": "3", "label": "3 columns" },
+        { "value": "4", "label": "4 columns" },
+        { "value": "5", "label": "5 columns" },
+        { "value": "6", "label": "6 columns" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "panel_width",
+      "label": "Panel width",
+      "options": [
+        { "value": "inherit", "label": "Inherit from section" },
+        { "value": "contained", "label": "Contained" },
+        { "value": "full", "label": "Full width" }
+      ],
+      "default": "inherit"
+    }
+  ],
+  "blocks": [
+    { "type": "fcy-mm-column" },
+    { "type": "fcy-mm-promo" },
+    { "type": "fcy-mm-collection" }
+  ]
+}
+{% endschema %}
